@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+>
+<h:head>
+    <h:outputStylesheet library="style" name="style.css"/>
+</h:head>
+<h:body >
+    <div class="header">
+        <div class="container">
+            <div class="fio">
+                <div class="fio-text">
+                    <span class="fio-text-before">Full name:</span>
+                    <span class="fio-text-after">Varyukhin Ivan</span>
+                </div>
+                <div class="fio-text">
+                    <span class="fio-text-before">Variant:</span>
+                    <span class="fio-text-after">639547</span>
+                </div>
+                <div class="fio-text">
+                    <span class="fio-text-before">Group:</span>
+                    <span class="fio-text-after">P32302</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <div class="graph">
+            <div class="container">
+                <div class="graph-panel">
+                    <div class="panel-element">
+                        <div id="image">
+                            <canvas id="area-image" width="450" height="450"/>
+                        </div>
+                        <h:form id="graph-click">
+                            <h:inputHidden id="coordinate-x-hidden" value="#{sessionBean.x}" />
+                            <h:inputHidden id="coordinate-y-hidden" value="#{sessionBean.y}" />
+                            <h:commandButton id="graph-fire" style="visibility: hidden">
+                                <f:ajax execute="@form"
+                                        listener="#{controller.takeShot(sessionBean)}"
+                                        render="history-table image-dots"
+                                />
+                            </h:commandButton>
+                        </h:form>
+                    </div>
+                    <div class="panel-element">
+                        <h:form id="shot">
+                            <div class="panel-element-inner">
+                                <h4 id="r-label">R: <h:outputText id="r-visible" value="${sessionBean.r}"/></h4>
+                                <h:commandButton value="1" styleClass="r-buttons" action="#{sessionBean.setR(1)}">
+                                    <f:ajax execute="@this" render="r-visible" />
+                                </h:commandButton>
+                                <h:commandButton value="1.5" styleClass="r-buttons" action="#{sessionBean.setR(1.5)}">
+                                    <f:ajax execute="@this" render="r-visible" />
+                                </h:commandButton>
+                                <h:commandButton value="2" styleClass="r-buttons" action="#{sessionBean.setR(2)}">
+                                    <f:ajax execute="@this" render="r-visible" />
+                                </h:commandButton>
+                                <h:commandButton value="2.5" styleClass="r-buttons" action="#{sessionBean.setR(2.5)}">
+                                    <f:ajax execute="@this" render="r-visible" />
+                                </h:commandButton>
+                                <h:commandButton value="3" styleClass="r-buttons" action="#{sessionBean.setR(3)}">
+                                    <f:ajax execute="@this" render="r-visible" />
+                                </h:commandButton>
+                            </div>
+                            <div class="panel-element-inner">
+                                <h4>X</h4>
+                                <span id="x_warning" class="warning"/>
+                                <br/>
+                                <h:selectOneRadio value="${sessionBean.x}">
+                                    <f:selectItem itemValue="-4" itemLabel="-4"/>
+                                    <f:selectItem itemValue="-3" itemLabel="-3"/>
+                                    <f:selectItem itemValue="-2" itemLabel="-2"/>
+                                    <f:selectItem itemValue="-1" itemLabel="-1"/>
+                                    <f:selectItem itemValue="0" itemLabel="0"/>
+                                    <f:selectItem itemValue="1" itemLabel="1"/>
+                                    <f:selectItem itemValue="2" itemLabel="2"/>
+                                    <f:selectItem itemValue="3" itemLabel="3"/>
+                                    <f:selectItem itemValue="4" itemLabel="4"/>
+                                </h:selectOneRadio>
+                            </div>
+                            <div class="panel-element-inner">
+                                <h4>Y</h4>
+                                <span id="y_warning" class="warning"/>
+                                <br/>
+                                <h:inputText id="y" value="#{sessionBean.y}"/>
+                            </div>
+                            <div class="panel-element-inner">
+                                <h:commandButton id="fire" value="FIRE">
+                                    <f:ajax execute="@form"
+                                            listener="#{controller.takeShot(sessionBean)}"
+                                            render="history-table image-dots"
+                                    />
+                                </h:commandButton>
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="history">
+            <div class="container">
+                <div class="panel-element">
+                    <h2>History</h2>
+                </div>
+                <div class="panel-element">
+                    <h:dataTable
+                            id="history-table"
+                            var="shot"
+                            value="#{dataManager.getAll()}"
+                    >
+                        <h:column>
+                            <f:facet name="header">Id</f:facet>
+                            <h:outputText value="${shot.id}" />
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">X</f:facet>
+                            <h:outputText value="${sessionBean.doubleFormat(shot.x)}" />
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Y</f:facet>
+                            <h:outputText value="${sessionBean.doubleFormat(shot.y)}" />
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">R</f:facet>
+                            <h:outputText value="${shot.r}" />
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Current time</f:facet>
+                            <h:outputText value="${sessionBean.dateFormat.format(shot.currTime)}" />
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Execution time</f:facet>
+                            <h:outputText value="${shot.execTime / 1000000} ms" />
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Result</f:facet>
+                            <h:outputText value="${shot.result}" />
+                        </h:column>
+                    </h:dataTable>
+                </div>
+                <div class="panel-element">
+                    <h:form>
+                        <h:commandButton id="clear" value="Clear history">
+                            <f:ajax render="history-table image-dots"
+                                    listener="#{controller.clearHistory()}" />
+                        </h:commandButton>
+                    </h:form>
+                </div>
+                <div class="panel-element">
+                    <h:form>
+                        <h:commandButton action="clock" value="Back to clock" />
+                    </h:form>
+                </div>
+            </div>
+        </div>
+        <h:outputScript name="main.js" />
+        <h:panelGroup id="image-dots">
+            <h:outputScript>
+                window.drawShots('#{dataManager.shotsJSON()}')
+            </h:outputScript>
+        </h:panelGroup>
+    </div>
+</h:body>
+</html>

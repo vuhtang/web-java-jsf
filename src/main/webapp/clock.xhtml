@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+>
+<h:head>
+    <h:outputStylesheet library="style" name="style.css"/>
+</h:head>
+<h:body>
+    <div class="header">
+        <div class="container">
+            <div class="fio">
+                <div class="fio-text">
+                    <span class="fio-text-before">Full name:</span>
+                    <span class="fio-text-after">Varyukhin Ivan</span>
+                </div>
+                <div class="fio-text">
+                    <span class="fio-text-before">Variant:</span>
+                    <span class="fio-text-after">639547</span>
+                </div>
+                <div class="fio-text">
+                    <span class="fio-text-before">Group:</span>
+                    <span class="fio-text-after">P32302</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <div class="container">
+            <div class="panel-element">
+                <h2 id="time">00:00:00</h2>
+            </div>
+            <div class="panel-element">
+                <h3 id="date">00/00/0000</h3>
+            </div>
+            <div class="panel-element">
+                <h:form>
+                    <h:commandButton action="app" value="Go to App"/>
+                </h:form>
+            </div>
+        </div>
+    </div>
+</h:body>
+<h:outputScript library="scripts" name="clock.js"/>
+</html>
