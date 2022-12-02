@@ -8,8 +8,8 @@ public interface DataManager {
     void add(Shot shot);
 
     List<Shot> getShots(int from, int count);
-    int getCount();
-    void removeAll();
 
-    List<Shot> getAll();
+    int getCount();
+
+    void removeAll();
 }

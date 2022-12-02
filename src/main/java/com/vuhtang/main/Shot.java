@@ -1,8 +1,14 @@
 package com.vuhtang.main;
 
+import javax.persistence.*;
+
 import java.util.Date;
 
+@Entity
+@Table(name = "shots")
 public class Shot {
+    @Id
+    @GeneratedValue
     private Integer id;
     private Double x;
     private Double y;
@@ -10,6 +16,9 @@ public class Shot {
     private Date currTime;
     private Long execTime;
     private String result;
+
+    public Shot() {
+    }
 
     public Shot(Integer id, Double x, Double y, Double r, Date currTime, Long execTime, String result) {
         this.id = id;

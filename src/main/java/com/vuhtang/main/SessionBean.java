@@ -9,10 +9,32 @@ import java.text.SimpleDateFormat;
 @Named("sessionBean")
 @SessionScoped
 public class SessionBean implements Serializable {
+
     private Double x = 0d;
     private Double y = 0d;
     private Double r = 1d;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private int currentPage = 0;
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void incCurrentPage() {
+        currentPage++;
+    }
+
+    public void decCurrentPage() {
+        if (currentPage != 0) currentPage--;
+    }
+
+    public int getEntitiesOnPage() {
+        return 10;
+    }
+
+    public void setCurrentPage(int page) {
+        currentPage = page;
+    }
 
     public String doubleFormat(Double d) {
         return String.format("%.4f", d);

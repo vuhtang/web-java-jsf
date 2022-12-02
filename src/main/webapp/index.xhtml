@@ -8,7 +8,7 @@
 <h:head>
     <h:outputStylesheet library="style" name="style.css"/>
 </h:head>
-<h:body >
+<h:body>
     <div class="header">
         <div class="container">
             <div class="fio">
@@ -36,8 +36,8 @@
                             <canvas id="area-image" width="450" height="450"/>
                         </div>
                         <h:form id="graph-click">
-                            <h:inputHidden id="coordinate-x-hidden" value="#{sessionBean.x}" />
-                            <h:inputHidden id="coordinate-y-hidden" value="#{sessionBean.y}" />
+                            <h:inputHidden id="coordinate-x-hidden" value="#{sessionBean.x}"/>
+                            <h:inputHidden id="coordinate-y-hidden" value="#{sessionBean.y}"/>
                             <h:commandButton id="graph-fire" style="visibility: hidden">
                                 <f:ajax execute="@form"
                                         listener="#{controller.takeShot(sessionBean)}"
@@ -51,19 +51,19 @@
                             <div class="panel-element-inner">
                                 <h4 id="r-label">R: <h:outputText id="r-visible" value="${sessionBean.r}"/></h4>
                                 <h:commandButton value="1" styleClass="r-buttons" action="#{sessionBean.setR(1)}">
-                                    <f:ajax execute="@this" render="r-visible" />
+                                    <f:ajax execute="@this" render="r-visible"/>
                                 </h:commandButton>
                                 <h:commandButton value="1.5" styleClass="r-buttons" action="#{sessionBean.setR(1.5)}">
-                                    <f:ajax execute="@this" render="r-visible" />
+                                    <f:ajax execute="@this" render="r-visible"/>
                                 </h:commandButton>
                                 <h:commandButton value="2" styleClass="r-buttons" action="#{sessionBean.setR(2)}">
-                                    <f:ajax execute="@this" render="r-visible" />
+                                    <f:ajax execute="@this" render="r-visible"/>
                                 </h:commandButton>
                                 <h:commandButton value="2.5" styleClass="r-buttons" action="#{sessionBean.setR(2.5)}">
-                                    <f:ajax execute="@this" render="r-visible" />
+                                    <f:ajax execute="@this" render="r-visible"/>
                                 </h:commandButton>
                                 <h:commandButton value="3" styleClass="r-buttons" action="#{sessionBean.setR(3)}">
-                                    <f:ajax execute="@this" render="r-visible" />
+                                    <f:ajax execute="@this" render="r-visible"/>
                                 </h:commandButton>
                             </div>
                             <div class="panel-element-inner">
@@ -110,57 +110,93 @@
                     <h:dataTable
                             id="history-table"
                             var="shot"
-                            value="#{dataManager.getAll()}"
+                            value="#{dataManagerCool.getShots(sessionBean.currentPage, sessionBean.entitiesOnPage)}"
                     >
                         <h:column>
                             <f:facet name="header">Id</f:facet>
-                            <h:outputText value="${shot.id}" />
+                            <h:outputText value="${shot.id}"/>
                         </h:column>
                         <h:column>
                             <f:facet name="header">X</f:facet>
-                            <h:outputText value="${sessionBean.doubleFormat(shot.x)}" />
+                            <h:outputText value="${sessionBean.doubleFormat(shot.x)}"/>
                         </h:column>
                         <h:column>
                             <f:facet name="header">Y</f:facet>
-                            <h:outputText value="${sessionBean.doubleFormat(shot.y)}" />
+                            <h:outputText value="${sessionBean.doubleFormat(shot.y)}"/>
                         </h:column>
                         <h:column>
                             <f:facet name="header">R</f:facet>
-                            <h:outputText value="${shot.r}" />
+                            <h:outputText value="${shot.r}"/>
                         </h:column>
                         <h:column>
                             <f:facet name="header">Current time</f:facet>
-                            <h:outputText value="${sessionBean.dateFormat.format(shot.currTime)}" />
+                            <h:outputText value="${sessionBean.dateFormat.format(shot.currTime)}"/>
                         </h:column>
                         <h:column>
                             <f:facet name="header">Execution time</f:facet>
-                            <h:outputText value="${shot.execTime / 1000000} ms" />
+                            <h:outputText value="${shot.execTime / 1000} ms"/>
                         </h:column>
                         <h:column>
                             <f:facet name="header">Result</f:facet>
-                            <h:outputText value="${shot.result}" />
+                            <h:outputText value="${shot.result}"/>
                         </h:column>
                     </h:dataTable>
                 </div>
                 <div class="panel-element">
                     <h:form>
-                        <h:commandButton id="clear" value="Clear history">
+                        <h:commandButton id="first-page" value="First page">
                             <f:ajax render="history-table image-dots"
-                                    listener="#{controller.clearHistory()}" />
+                                    listener="#{sessionBean.setCurrentPage(0)}"
+                            />
+                        </h:commandButton>
+                        <h:commandButton id="previous-page" value="Previous page">
+                            <f:ajax render="history-table image-dots"
+                                    listener="#{sessionBean.decCurrentPage()}"
+                            />
+                        </h:commandButton>
+                        <h:commandButton id="next-page" value="Next page">
+                            <f:ajax render="history-table image-dots"
+                                    listener="#{sessionBean.incCurrentPage()}"
+                            />
+                        </h:commandButton>
+                        <h:commandButton id="last-page" value="Last page">
+                            <f:ajax render="history-table image-dots"
+                                    listener="#{sessionBean.setCurrentPage(
+                                    dataManagerCool.getLastPageNumber(sessionBean.entitiesOnPage)
+                                    )}"
+                            />
                         </h:commandButton>
                     </h:form>
                 </div>
                 <div class="panel-element">
                     <h:form>
-                        <h:commandButton action="clock" value="Back to clock" />
+                        <h:commandButton id="add-one-hundered" value="ADD ONE THOUSAND SHOTS">
+                            <f:ajax render="history-table image-dots"
+                                    listener="#{dataManagerCool.addOneHundredShots()}"
+                            />
+                        </h:commandButton>
+                    </h:form>
+                </div>
+                <div class="panel-element">
+                    <h:form>
+                        <h:commandButton id="clear" value="Clear history">
+                            <f:ajax render="history-table image-dots"
+                                    listener="#{controller.clearHistory(sessionBean)}"/>
+                        </h:commandButton>
+                    </h:form>
+                </div>
+                <div class="panel-element">
+                    <h:form>
+                        <h:commandButton action="clock" value="Back to clock"/>
                     </h:form>
                 </div>
             </div>
         </div>
-        <h:outputScript name="main.js" />
+        <h:outputScript name="main.js"/>
         <h:panelGroup id="image-dots">
             <h:outputScript>
-                window.drawShots('#{dataManager.shotsJSON()}')
+                window.drawShots('#{dataManagerCool
+                    .shotsJSON(sessionBean.currentPage, sessionBean.entitiesOnPage)}')
             </h:outputScript>
         </h:panelGroup>
     </div>

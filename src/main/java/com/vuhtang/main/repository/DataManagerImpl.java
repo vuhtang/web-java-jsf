@@ -6,7 +6,6 @@ import com.vuhtang.main.utils.Shots;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,12 +26,7 @@ public class DataManagerImpl implements DataManager {
         collection.clear();
     }
 
-    @Override
-    public List<Shot> getAll() {
-        return new ArrayList<>(collection);
-    }
-
-    public String shotsJSON() {
+    public String shotsJSON(int from, int count) {
         Shots shots = new Shots(getShots(0, getCount()));
         return new Gson().toJson(shots);
     }
