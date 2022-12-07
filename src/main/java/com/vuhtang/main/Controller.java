@@ -1,7 +1,8 @@
 package com.vuhtang.main;
 
 import com.vuhtang.main.parsers.ShotsParserFromBean;
-import com.vuhtang.main.repository.DataManagerDB;
+import com.vuhtang.main.repository.DataManager;
+import com.vuhtang.main.repository.DatabaseManager;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -10,7 +11,8 @@ import jakarta.inject.Named;
 @ApplicationScoped
 public class Controller {
     @Inject
-    private DataManagerDB manager;
+    @DatabaseManager
+    private DataManager manager;
 
     public void takeShot(SessionBean bean) {
         Shot newShot = ShotsParserFromBean.parseShot(bean.getX(), bean.getY(), bean.getR());

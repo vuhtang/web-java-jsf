@@ -7,6 +7,7 @@ import com.vuhtang.main.utils.ShotChecker;
 import com.vuhtang.main.utils.ShotCheckerImpl;
 import com.vuhtang.main.utils.Shots;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
 import org.hibernate.Session;
@@ -17,11 +18,17 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Named("dataManagerCool")
 @ApplicationScoped
+@DatabaseManager
 public class DataManagerDB implements DataManager {
 
     @PostConstruct
-    public void initHibernateUtil() {
+    private void initHibernateUtil() {
         HibernateUtil.init();
+    }
+
+    @PreDestroy
+    private void deInitHibernateUtil() {
+        HibernateUtil.closeSessionFactory();
     }
 
     @Override
@@ -105,7 +112,7 @@ public class DataManagerDB implements DataManager {
         ShotChecker checker = new ShotCheckerImpl();
         Shot shot;
         List<Double> rPossibleValues = List.of(new Double[]{1.0, 1.5, 2.0, 2.5, 3.0});
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100000; i++) {
             shot = checker.takeShot(
                     Math.random() * 4 - 2,
                     Math.random() * 4 - 2,
