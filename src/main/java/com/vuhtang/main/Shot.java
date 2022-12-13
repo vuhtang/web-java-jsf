@@ -1,5 +1,7 @@
 package com.vuhtang.main;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 import java.util.Date;
@@ -8,7 +10,7 @@ import java.util.Date;
 @Table(name = "shots")
 public class Shot {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Double x;
     private Double y;

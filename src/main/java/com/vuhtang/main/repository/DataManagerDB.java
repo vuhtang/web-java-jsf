@@ -58,7 +58,6 @@ public class DataManagerDB implements DataManager {
             transaction.commit();
             return resultList;
         } catch (Exception ex) {
-            ex.printStackTrace();
             if (transaction != null) {
                 transaction.rollback();
             }
@@ -97,6 +96,7 @@ public class DataManagerDB implements DataManager {
         }
     }
 
+    @Override
     public int getLastPageNumber(int pageSize) {
         int numberOfRecords = getCount();
         if (numberOfRecords % pageSize == 0) return numberOfRecords / pageSize - 1;
@@ -112,7 +112,7 @@ public class DataManagerDB implements DataManager {
         ShotChecker checker = new ShotCheckerImpl();
         Shot shot;
         List<Double> rPossibleValues = List.of(new Double[]{1.0, 1.5, 2.0, 2.5, 3.0});
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 100; i++) {
             shot = checker.takeShot(
                     Math.random() * 4 - 2,
                     Math.random() * 4 - 2,

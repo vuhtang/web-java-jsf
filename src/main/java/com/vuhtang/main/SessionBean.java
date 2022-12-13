@@ -15,6 +15,15 @@ public class SessionBean implements Serializable {
     private Double r = 1d;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private int currentPage = 0;
+    private int currentShotsOnPage = 0;
+
+    public int getCurrentShotsOnPage() {
+        return currentShotsOnPage;
+    }
+
+    public void setCurrentShotsOnPage(int currentShotsOnPage) {
+        this.currentShotsOnPage = currentShotsOnPage;
+    }
 
     public int getCurrentPage() {
         return currentPage;

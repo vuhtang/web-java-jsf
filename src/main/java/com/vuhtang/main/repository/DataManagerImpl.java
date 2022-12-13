@@ -26,6 +26,11 @@ public class DataManagerImpl implements DataManager {
         collection.clear();
     }
 
+    @Override
+    public int getLastPageNumber(int pageSize) {
+        return 0;
+    }
+
     public String shotsJSON(int from, int count) {
         Shots shots = new Shots(getShots(0, getCount()));
         return new Gson().toJson(shots);

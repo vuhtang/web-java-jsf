@@ -33,7 +33,7 @@
                 <div class="graph-panel">
                     <div class="panel-element">
                         <div id="image">
-                            <canvas id="area-image" width="450" height="450"/>
+                            <canvas id="area-image" width="400" height="400"/>
                         </div>
                         <h:form id="graph-click">
                             <h:inputHidden id="coordinate-x-hidden" value="#{sessionBean.x}"/>
@@ -110,7 +110,7 @@
                     <h:dataTable
                             id="history-table"
                             var="shot"
-                            value="#{dataManagerCool.getShots(sessionBean.currentPage, sessionBean.entitiesOnPage)}"
+                            value="#{controller.getShotsList(sessionBean)}"
                     >
                         <h:column>
                             <f:facet name="header">Id</f:facet>
@@ -170,7 +170,7 @@
                 </div>
                 <div class="panel-element">
                     <h:form>
-                        <h:commandButton id="add-one-hundered" value="ADD ONE THOUSAND SHOTS">
+                        <h:commandButton id="add-one-hundered" value="ADD ONE HUNDRED SHOTS">
                             <f:ajax render="history-table image-dots"
                                     listener="#{dataManagerCool.addOneHundredShots()}"
                             />

@@ -13,6 +13,6 @@
     <property name="hibernate.connection.pool_size">10</property>
     <property name="hibernate.hbm2ddl.auto">create</property>
 
-    <mapping class="com.vuhtang.main.Shot" />
+    <property name="hibernate.current_session_context_class">thread</property>
   </session-factory>
 </hibernate-configuration>

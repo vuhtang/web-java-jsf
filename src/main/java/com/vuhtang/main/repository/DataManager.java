@@ -12,4 +12,6 @@ public interface DataManager {
     int getCount();
 
     void removeAll();
+
+    int getLastPageNumber(int pageSize);
 }
