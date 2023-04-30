@@ -1,5 +1,4 @@
 package com.vuhtang.main;
-
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
