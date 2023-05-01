@@ -36,3 +36,42 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+// Считываем переменные из файла параметров
+def properties = new Properties()
+file("gradle.properties").withInputStream { properties.load(it) }
+def version = properties.getProperty('VERSION')
+def mainClass = properties.getProperty('MAIN_CLASS')
+def srcDir = properties.getProperty('SRC_DIR')
+def testDir = properties.getProperty('TEST_DIR')
+def binDir = properties.getProperty('BIN_DIR')
+def testBinDir = properties.getProperty('TEST_BIN_DIR')
+def libDir = properties.getProperty('LIB_DIR')
+def jarName = properties.getProperty('JAR_NAME')
+
+
+task compileProject(type: JavaCompile) {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    classpath = sourceSets.main.compileClasspath
+    source = srcDir
+    destinationDirectory = file(binDir)
+}
+
+task buildProject(type: Jar) {
+    dependsOn 'compileProject'
+    manifest {
+        attributes 'Main-Class': mainClass
+    }
+
+    from('build/classes/java/main') {
+        include '**/*.class'
+    }
+
+    archiveFileName = jarName
+    destinationDirectory = file('build/libs')
+}
+
+task cleanProject(type: Delete){
+    delete 'build'
+}

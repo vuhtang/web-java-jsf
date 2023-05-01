@@ -25,6 +25,7 @@ public class DataManagerTest {
     @BeforeAll
     static void setUp() {
         HibernateUtil.init();
+        dataManagerDB.removeAll();
     }
 
     @AfterAll
