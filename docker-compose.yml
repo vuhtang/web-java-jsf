@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   db:
-    image: db-mysql
+    image: mysql
     container_name: my-mysql
     ports:
       - "3306:3306"
