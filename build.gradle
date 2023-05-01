@@ -38,6 +38,7 @@ test {
 }
 
 // Считываем переменные из файла параметров
+//ВОТ ЭТО НАХУЙ МОЖНО НЕ ПИСАТЬ ВСЁ
 def properties = new Properties()
 file("gradle.properties").withInputStream { properties.load(it) }
 def version = properties.getProperty('VERSION')
@@ -50,12 +51,13 @@ def libDir = properties.getProperty('LIB_DIR')
 def jarName = properties.getProperty('JAR_NAME')
 
 
+
 task compileProject(type: JavaCompile) {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
     classpath = sourceSets.main.compileClasspath
     source = srcDir
-    destinationDirectory = file(binDir)
+    destinationDirectory = file(BIN_DIR)
 }
 
 task buildProject(type: Jar) {
@@ -64,12 +66,12 @@ task buildProject(type: Jar) {
         attributes 'Main-Class': mainClass
     }
 
-    from('build/classes/java/main') {
+    from(BIN_DIR) {
         include '**/*.class'
     }
 
     archiveFileName = jarName
-    destinationDirectory = file('build/libs')
+    destinationDirectory = file(LIB_DIR)
 }
 
 task cleanProject(type: Delete){
