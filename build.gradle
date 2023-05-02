@@ -1,3 +1,5 @@
+import javax.sound.sampled.*
+
 plugins {
     id 'java'
     id 'war'
@@ -37,43 +39,47 @@ test {
     useJUnitPlatform()
 }
 
-// Считываем переменные из файла параметров
-//ВОТ ЭТО НАХУЙ МОЖНО НЕ ПИСАТЬ ВСЁ
-def properties = new Properties()
-file("gradle.properties").withInputStream { properties.load(it) }
-def version = properties.getProperty('VERSION')
-def mainClass = properties.getProperty('MAIN_CLASS')
-def srcDir = properties.getProperty('SRC_DIR')
-def testDir = properties.getProperty('TEST_DIR')
-def binDir = properties.getProperty('BIN_DIR')
-def testBinDir = properties.getProperty('TEST_BIN_DIR')
-def libDir = properties.getProperty('LIB_DIR')
-def jarName = properties.getProperty('JAR_NAME')
+
+//Для музыкальной сборки
+def musicFile = new File("music.wav")
+AudioInputStream audioStream = AudioSystem.getAudioInputStream(musicFile)
+Clip clip = AudioSystem.getClip()
+clip.open(audioStream)
 
 
 
+//Компиляция
 task compileProject(type: JavaCompile) {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
     classpath = sourceSets.main.compileClasspath
-    source = srcDir
+    source = SRC_DIR
     destinationDirectory = file(BIN_DIR)
 }
 
+//Сборка джарника
 task buildProject(type: Jar) {
-    dependsOn 'compileProject'
+    dependsOn compileProject
     manifest {
-        attributes 'Main-Class': mainClass
+        attributes 'Main-Class': MAIN_CLASS
     }
 
     from(BIN_DIR) {
         include '**/*.class'
     }
 
-    archiveFileName = jarName
+    archiveFileName = JAR_NAME
     destinationDirectory = file(LIB_DIR)
 }
 
+//Чистка билда
 task cleanProject(type: Delete){
     delete 'build'
+}
+
+//Музыкальная сборка джарника
+task music(dependsOn: buildProject){
+    doLast {
+        clip.start()
+    }
 }
