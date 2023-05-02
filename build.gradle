@@ -49,7 +49,7 @@ clip.open(audioStream)
 
 
 //Компиляция
-task compileProject(type: JavaCompile) {
+tasks.register("compileProject", JavaCompile) {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
     classpath = sourceSets.main.compileClasspath
@@ -58,7 +58,7 @@ task compileProject(type: JavaCompile) {
 }
 
 //Сборка джарника
-task buildProject(type: Jar) {
+tasks.register("buildProject", Jar) {
     dependsOn compileProject
     manifest {
         attributes 'Main-Class': MAIN_CLASS
@@ -73,12 +73,13 @@ task buildProject(type: Jar) {
 }
 
 //Чистка билда
-task cleanProject(type: Delete){
+tasks.register("cleanProject", Delete) {
     delete 'build'
 }
 
 //Музыкальная сборка джарника
-task music(dependsOn: buildProject){
+tasks.register("music"){
+    dependsOn buildProject
     doLast {
         clip.start()
     }
