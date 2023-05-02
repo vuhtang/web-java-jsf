@@ -1,3 +1,5 @@
+import javax.sound.sampled.*
+
 plugins {
     id 'java'
     id 'war'
@@ -35,4 +37,50 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+
+//Для музыкальной сборки
+def musicFile = new File("music.wav")
+AudioInputStream audioStream = AudioSystem.getAudioInputStream(musicFile)
+Clip clip = AudioSystem.getClip()
+clip.open(audioStream)
+
+
+
+//Компиляция
+tasks.register("compileProject", JavaCompile) {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    classpath = sourceSets.main.compileClasspath
+    source = SRC_DIR
+    destinationDirectory = file(BIN_DIR)
+}
+
+//Сборка джарника
+tasks.register("buildProject", Jar) {
+    dependsOn compileProject
+    manifest {
+        attributes 'Main-Class': MAIN_CLASS
+    }
+
+    from(BIN_DIR) {
+        include '**/*.class'
+    }
+
+    archiveFileName = JAR_NAME
+    destinationDirectory = file(LIB_DIR)
+}
+
+//Чистка билда
+tasks.register("cleanProject", Delete) {
+    delete 'build'
+}
+
+//Музыкальная сборка джарника
+tasks.register("music"){
+    dependsOn buildProject
+    doLast {
+        clip.start()
+    }
 }
