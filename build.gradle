@@ -163,3 +163,12 @@ tasks.register("xml") {
         }
     }
 }
+
+tasks.register('native2ascii'){
+    doLast {
+        ant.native2ascii(
+                src: 'src/main/resources',
+                includes: '**.properties',
+                dest: 'src/main/resources/ASCII')
+    }
+}
