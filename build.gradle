@@ -7,6 +7,7 @@ import java.security.MessageDigest
 plugins {
     id 'java'
     id 'war'
+    id 'org.hidetake.ssh' version '2.11.2'
 }
 
 group 'com.vuhtang'
@@ -88,7 +89,7 @@ Map<String, String> getMainAttr() {
 
 static Map<String, String> getHashAttributes() {
     Map<String, String> attr = new HashMap<>()
-    List<String> projectFiles = listProjectFilesFromDir('src')
+    List<String> projectFiles = listFilesFromDir('src')
     String checkSumMD5 = hashFilesWithAlgorithm("MD5", projectFiles)
     String checkSumSHA1 = hashFilesWithAlgorithm("SHA-1", projectFiles)
     attr.put("MD5", checkSumMD5)
@@ -96,11 +97,11 @@ static Map<String, String> getHashAttributes() {
     return attr
 }
 
-static List<String> listProjectFilesFromDir(String dir) {
+static List<String> listFilesFromDir(String dir) {
     List<String> list = new ArrayList<>()
     for (File f : new File(dir).listFiles()) {
         if (f.isDirectory())
-            list.addAll(listProjectFilesFromDir(f.toString()))
+            list.addAll(listFilesFromDir(f.toString()))
         else
             list.add(f.toString())
     }
@@ -109,7 +110,7 @@ static List<String> listProjectFilesFromDir(String dir) {
 
 static String hashFilesWithAlgorithm(String algorithm, List<String> files) {
     MessageDigest md = MessageDigest.getInstance(algorithm)
-    for (String f: files) {
+    for (String f : files) {
         md.update(Files.readAllBytes(Paths.get(f)))
     }
     String checkSum = Base64.getEncoder().encodeToString(md.digest())
@@ -141,7 +142,7 @@ tasks.register('docc', Jar) {
 tasks.register("music") {
     dependsOn buildProject
     doLast {
-        def musicFile = new File("music.wav")
+        def musicFile = new File(MUSIC_FILE)
         AudioInputStream audioStream = AudioSystem.getAudioInputStream(musicFile)
         Clip clip = AudioSystem.getClip()
         clip.open(audioStream)
@@ -164,11 +165,83 @@ tasks.register("xml") {
     }
 }
 
-tasks.register('native2ascii'){
+tasks.register('native2ascii') {
     doLast {
         ant.native2ascii(
                 src: 'src/main/resources',
                 includes: '**.properties',
                 dest: 'src/main/resources/ASCII')
+    }
+}
+
+List<String> readFilesResistantForDiff() {
+    List<String> files = new ArrayList<>()
+    try {
+        BufferedReader reader = new BufferedReader(new FileReader(new File(DIFF_FILE)))
+        files = reader.readLines()
+    } catch (FileNotFoundException e) {
+        e.printStackTrace()
+    } catch (IOException e) {
+        e.printStackTrace()
+    }
+    return files
+}
+
+tasks.register('gitdiff') {
+    List<String> filesFromProperties = readFilesResistantForDiff()
+    String changedFile = ""
+    boolean wrongFileWasModified = false
+    def out = new ByteArrayOutputStream()
+    for (String file : filesFromProperties) {
+
+        exec {
+            commandLine 'git', 'diff', file
+            standardOutput = out
+        }
+
+        if (out.size() > 0) {
+            changedFile = file
+            wrongFileWasModified = true
+            break
+        }
+    }
+    out.close()
+
+    if (wrongFileWasModified) {
+        println("File \"" + changedFile + "\" from properties has been modified")
+        println("Commit rejected")
+    } else {
+        exec {
+            commandLine 'git', 'add', '.'
+        }
+        exec {
+            commandLine 'git', 'commit', '-m', '"commit with gitdiff task"'
+        }
+    }
+}
+
+remotes {
+    web01 {
+        host = 'se.ifmo.ru'
+        user = 's336428'
+        port = 2222
+        password = PASSWORD
+    }
+}
+
+tasks.register('scp') {
+    dependsOn buildProject
+
+    String pathToJar = LIB_DIR + "/" + JAR_NAME
+
+    doLast {
+        ssh.run {
+            settings {
+                pty = true
+            }
+            session(remotes.web01) {
+                put from: file(pathToJar), into: PATH_TO_REMOTE_DIR
+            }
+        }
     }
 }
