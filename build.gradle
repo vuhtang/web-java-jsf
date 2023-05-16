@@ -286,3 +286,133 @@ tasks.register('alt') {
         )
     }
 }
+
+tasks.register('svnCheckout') {
+    ByteArrayOutputStream out = new ByteArrayOutputStream()
+    doLast {
+        exec {
+            commandLine 'svn', 'checkout', SVN_REPO, 'tmp'
+            standardOutput = new ByteArrayOutputStream()
+        }
+
+        File tmp = new File('tmp')
+        svnCheckout.extensions.tmp = tmp
+        exec {
+            workingDir(tmp)
+            commandLine 'svn', 'info', '--show-item', 'revision'
+            standardOutput = out
+        }
+        int lastRevisionNumber = Integer.parseInt(out.toString().strip())
+        svnCheckout.extensions.lastRevisionNumber = lastRevisionNumber
+        out.close()
+    }
+}
+
+tasks.register('compileSvn1', JavaCompile) {
+    dependsOn svnCheckout
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    classpath = sourceSets.main.compileClasspath
+    source = SRC_SVN_DIR
+    destinationDirectory = file(BIN_SVN_DIR)
+}
+
+tasks.register('buildSvn1', Jar) {
+    dependsOn compileSvn1
+    manifest {
+        attributes 'Main-Class': MAIN_CLASS
+    }
+
+    from(BIN_SVN_DIR) {
+        include '**/*.class'
+    }
+
+    archiveFileName = JAR_SVN_NAME
+    destinationDirectory = file(LIB_DIR)
+}
+
+tasks.register('svnCheckout2') {
+    dependsOn buildSvn1
+    doLast {
+        exec {
+            workingDir(svnCheckout.extensions.tmp)
+            commandLine 'svn', 'up', '-r', svnCheckout.extensions.lastRevisionNumber - 1
+        }
+        buildSvn1.archiveFileName = JAR_SVN_NAME1
+    }
+}
+
+tasks.register('compileSvn2', JavaCompile) {
+    dependsOn svnCheckout2
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    classpath = sourceSets.main.compileClasspath
+    source = SRC_SVN_DIR
+    destinationDirectory = file(BIN_SVN_DIR)
+}
+
+tasks.register('buildSvn2', Jar) {
+    dependsOn compileSvn2
+    manifest {
+        attributes 'Main-Class': MAIN_CLASS
+    }
+
+    from(BIN_SVN_DIR) {
+        include '**/*.class'
+    }
+
+    archiveFileName = JAR_SVN_NAME1
+    destinationDirectory = file(LIB_DIR)
+}
+
+tasks.register('svnCheckout3') {
+    dependsOn buildSvn2
+    doLast {
+        exec {
+            workingDir(svnCheckout.extensions.tmp)
+            commandLine 'svn', 'up', '-r', svnCheckout.extensions.lastRevisionNumber - 2
+        }
+        buildSvn1.archiveFileName = JAR_SVN_NAME1
+    }
+}
+
+tasks.register('compileSvn3', JavaCompile) {
+    dependsOn svnCheckout3
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    classpath = sourceSets.main.compileClasspath
+    source = SRC_SVN_DIR
+    destinationDirectory = file(BIN_SVN_DIR)
+}
+
+tasks.register('buildSvn3', Jar) {
+    dependsOn compileSvn3
+    manifest {
+        attributes 'Main-Class': MAIN_CLASS
+    }
+
+    from(BIN_SVN_DIR) {
+        include '**/*.class'
+    }
+
+    archiveFileName = JAR_SVN_NAME2
+    destinationDirectory = file(LIB_DIR)
+}
+
+tasks.register('zipSvn', Zip) {
+    dependsOn buildSvn3
+    from(LIB_DIR) {
+        include '**/*.jar'
+    }
+    archiveFileName = ZIP_SVN_NAME
+    destinationDirectory = file(LIB_DIR)
+}
+
+tasks.register('del', Delete) {
+    dependsOn zipSvn
+    delete 'tmp', LIB_DIR + "/" + JAR_SVN_NAME, LIB_DIR + "/" + JAR_SVN_NAME1, LIB_DIR + "/" + JAR_SVN_NAME2
+}
+tasks.register('team') {
+    dependsOn del
+}
+
