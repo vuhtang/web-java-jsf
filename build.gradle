@@ -188,34 +188,36 @@ List<String> readFilesResistantForDiff() {
 }
 
 tasks.register('gitdiff') {
-    List<String> filesFromProperties = readFilesResistantForDiff()
-    String changedFile = ""
-    boolean wrongFileWasModified = false
-    def out = new ByteArrayOutputStream()
-    for (String file : filesFromProperties) {
+    doLast {
+        List<String> filesFromProperties = readFilesResistantForDiff()
+        String changedFile = ""
+        boolean wrongFileWasModified = false
+        def out = new ByteArrayOutputStream()
+        for (String file : filesFromProperties) {
 
-        exec {
-            commandLine 'git', 'diff', file
-            standardOutput = out
-        }
+            exec {
+                commandLine 'git', 'diff', file
+                standardOutput = out
+            }
 
-        if (out.size() > 0) {
-            changedFile = file
-            wrongFileWasModified = true
-            break
+            if (out.size() > 0) {
+                changedFile = file
+                wrongFileWasModified = true
+                break
+            }
         }
-    }
-    out.close()
+        out.close()
 
-    if (wrongFileWasModified) {
-        println("File \"" + changedFile + "\" from properties has been modified")
-        println("Commit rejected")
-    } else {
-        exec {
-            commandLine 'git', 'add', '.'
-        }
-        exec {
-            commandLine 'git', 'commit', '-m', '"commit with gitdiff task"'
+        if (wrongFileWasModified) {
+            println("File \"" + changedFile + "\" from properties has been modified")
+            println("Commit rejected")
+        } else {
+            exec {
+                commandLine 'git', 'add', '.'
+            }
+            exec {
+                commandLine 'git', 'commit', '-m', '"commit with gitdiff task"'
+            }
         }
     }
 }
@@ -243,5 +245,44 @@ tasks.register('scp') {
                 put from: file(pathToJar), into: PATH_TO_REMOTE_DIR
             }
         }
+    }
+}
+
+tasks.register('preAlt') {
+    doLast {
+        ant.replaceregexp(
+                file: PATH_TO_CFG,
+                match: "execTime",
+                replace: "executionTime",
+                flags: "g"
+        )
+    }
+}
+
+compileProject.shouldRunAfter(preAlt)
+
+tasks.register('buildAlt', Jar) {
+    dependsOn preAlt, compileProject
+    manifest {
+        attributes 'Main-Class': MAIN_CLASS
+    }
+
+    from(BIN_DIR) {
+        include '**/*.class'
+    }
+
+    archiveFileName = JAR_NAME_ALT
+    destinationDirectory = file(LIB_DIR)
+}
+
+tasks.register('alt') {
+    dependsOn buildAlt
+    doLast {
+        ant.replaceregexp(
+            file: PATH_TO_CFG,
+            match: "executionTime",
+            replace: "execTime",
+            flags: "g"
+        )
     }
 }
