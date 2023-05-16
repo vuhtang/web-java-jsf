@@ -416,3 +416,82 @@ tasks.register('team') {
     dependsOn del
 }
 
+tasks.register('history') {
+    doLast {
+        OutputStream out = new ByteArrayOutputStream()
+        FileOutputStream fOut = new FileOutputStream("sources.txt")
+        exec {
+            commandLine 'find', 'src/main', '-name', '*.java'
+            standardOutput out
+        }
+        out.writeTo(fOut)
+        out.close()
+        fOut.close()
+        int v = exec {
+            commandLine 'javac', '-d', BIN_DIR, '@sources.txt'
+            standardOutput = new ByteArrayOutputStream()
+            errorOutput = standardOutput
+            ignoreExitValue true
+        }.getExitValue()
+        delete 'sources.txt'
+        if (v != 0) {
+            // svnCheckout
+            OutputStream out1 = new ByteArrayOutputStream()
+            OutputStream out2 = new ByteArrayOutputStream()
+            exec {
+                commandLine 'svn', 'checkout', SVN_REPO, 'tmp'
+                standardOutput = out2
+            }
+            out2.close()
+
+            File tmp = new File('tmp')
+            exec {
+                workingDir(tmp)
+                commandLine 'svn', 'info', '--show-item', 'revision'
+                standardOutput = out1
+            }
+            int lastRevisionNumber = Integer.parseInt(out1.toString().strip())
+            out1.close()
+            //
+
+            int cur = lastRevisionNumber
+            while (v != 0 && cur > 1) {
+                cur -= 1
+                exec {
+                    workingDir(tmp)
+                    commandLine 'svn', 'up', '-r', cur
+                }
+                out = new ByteArrayOutputStream()
+                fOut = new FileOutputStream("sources.txt")
+                exec {
+                    commandLine 'find', 'tmp/jsf/src/main', '-name', '*.java'
+                    standardOutput = out
+                }
+                out.writeTo(fOut)
+                out.close()
+                fOut.close()
+                v = exec {
+                    commandLine 'javac', '-d', BIN_DIR, '@sources.txt'
+                    ignoreExitValue true
+                    standardOutput = new ByteArrayOutputStream()
+                    errorOutput = standardOutput
+                }.getExitValue()
+                delete 'sources.txt'
+            }
+            OutputStream out3 = new ByteArrayOutputStream()
+            OutputStream fOut3 = new FileOutputStream("gradle/report.txt")
+            String s = cur + ':' + (lastRevisionNumber-1)
+            exec {
+                workingDir(tmp)
+                commandLine 'svn', 'diff', '-r', s
+                standardOutput = out3
+            }
+            out3.writeTo(fOut3)
+            out3.flush()
+            out3.close()
+            fOut3.close()
+            delete 'tmp'
+        }
+    }
+}
+
