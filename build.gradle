@@ -21,10 +21,6 @@ ext {
     junitVersion = '5.9.2'
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
 dependencies {
     compileOnly('jakarta.platform:jakarta.jakartaee-api:9.1.0')
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.9.1'
@@ -47,7 +43,6 @@ test {
 //Компиляция
 tasks.register("compileProject", JavaCompile) {
     sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
     classpath = sourceSets.main.compileClasspath
     source = SRC_DIR
     destinationDirectory = file(BIN_DIR)
@@ -81,41 +76,7 @@ tasks.register('JUnitTests', Test) {
     }
 }
 
-Map<String, String> getMainAttr() {
-    Map<String, String> attr = new HashMap<>()
-    attr.put("Main-Class", MAIN_CLASS)
-    return attr
-}
 
-static Map<String, String> getHashAttributes() {
-    Map<String, String> attr = new HashMap<>()
-    List<String> projectFiles = listFilesFromDir('src')
-    String checkSumMD5 = hashFilesWithAlgorithm("MD5", projectFiles)
-    String checkSumSHA1 = hashFilesWithAlgorithm("SHA-1", projectFiles)
-    attr.put("MD5", checkSumMD5)
-    attr.put("SHA-1", checkSumSHA1)
-    return attr
-}
-
-static List<String> listFilesFromDir(String dir) {
-    List<String> list = new ArrayList<>()
-    for (File f : new File(dir).listFiles()) {
-        if (f.isDirectory())
-            list.addAll(listFilesFromDir(f.toString()))
-        else
-            list.add(f.toString())
-    }
-    return list
-}
-
-static String hashFilesWithAlgorithm(String algorithm, List<String> files) {
-    MessageDigest md = MessageDigest.getInstance(algorithm)
-    for (String f : files) {
-        md.update(Files.readAllBytes(Paths.get(f)))
-    }
-    String checkSum = Base64.getEncoder().encodeToString(md.digest())
-    return checkSum
-}
 
 tasks.register('docc', Jar) {
     dependsOn javadoc
@@ -172,19 +133,6 @@ tasks.register('native2ascii') {
                 includes: '**.properties',
                 dest: 'src/main/resources/ASCII')
     }
-}
-
-List<String> readFilesResistantForDiff() {
-    List<String> files = new ArrayList<>()
-    try {
-        BufferedReader reader = new BufferedReader(new FileReader(new File(DIFF_FILE)))
-        files = reader.readLines()
-    } catch (FileNotFoundException e) {
-        e.printStackTrace()
-    } catch (IOException e) {
-        e.printStackTrace()
-    }
-    return files
 }
 
 tasks.register('gitdiff') {
@@ -495,3 +443,74 @@ tasks.register('history') {
     }
 }
 
+tasks.register('preEnv', JavaCompile) {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    classpath = sourceSets.main.compileClasspath
+    source = SRC_DIR
+    options.compilerArgs.addAll(List.of("-nowarn", "-Xlint:none", "-Xlint:deprecation", "-Xlint:unchecked"))
+    destinationDirectory = file(BIN_DIR)
+}
+
+tasks.register('env', Jar) {
+    dependsOn preEnv
+    manifest {
+        attributes 'Main-Class': MAIN_CLASS
+    }
+
+    from(BIN_DIR) {
+        include '**/*.class'
+    }
+
+    archiveFileName = JAR_NAME
+    destinationDirectory = file(LIB_DIR)
+}
+
+Map<String, String> getMainAttr() {
+    Map<String, String> attr = new HashMap<>()
+    attr.put("Main-Class", MAIN_CLASS)
+    return attr
+}
+
+static Map<String, String> getHashAttributes() {
+    Map<String, String> attr = new HashMap<>()
+    List<String> projectFiles = listFilesFromDir('src')
+    String checkSumMD5 = hashFilesWithAlgorithm("MD5", projectFiles)
+    String checkSumSHA1 = hashFilesWithAlgorithm("SHA-1", projectFiles)
+    attr.put("MD5", checkSumMD5)
+    attr.put("SHA-1", checkSumSHA1)
+    return attr
+}
+
+static List<String> listFilesFromDir(String dir) {
+    List<String> list = new ArrayList<>()
+    for (File f : new File(dir).listFiles()) {
+        if (f.isDirectory())
+            list.addAll(listFilesFromDir(f.toString()))
+        else
+            list.add(f.toString())
+    }
+    return list
+}
+
+static String hashFilesWithAlgorithm(String algorithm, List<String> files) {
+    MessageDigest md = MessageDigest.getInstance(algorithm)
+    for (String f : files) {
+        md.update(Files.readAllBytes(Paths.get(f)))
+    }
+    String checkSum = Base64.getEncoder().encodeToString(md.digest())
+    return checkSum
+}
+
+List<String> readFilesResistantForDiff() {
+    List<String> files = new ArrayList<>()
+    try {
+        BufferedReader reader = new BufferedReader(new FileReader(new File(DIFF_FILE)))
+        files = reader.readLines()
+    } catch (FileNotFoundException e) {
+        e.printStackTrace()
+    } catch (IOException e) {
+        e.printStackTrace()
+    }
+    return files
+}
