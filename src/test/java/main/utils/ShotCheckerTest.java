@@ -1,7 +1,7 @@
 package main.utils;
 
 import com.vuhtang.main.Shot;
-import com.vuhtang.main.utils.ShotCheckerImpl;
+import com.vuhtang.main.utils.data.ShotCheckerImpl;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;

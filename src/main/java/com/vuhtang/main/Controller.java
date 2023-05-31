@@ -1,5 +1,7 @@
 package com.vuhtang.main;
 
+import com.vuhtang.main.beans.MBeansController;
+import com.vuhtang.main.beans.SessionBean;
 import com.vuhtang.main.parsers.ShotsParserFromBean;
 import com.vuhtang.main.repository.DataManager;
 import com.vuhtang.main.repository.DatabaseManager;
@@ -15,9 +17,12 @@ public class Controller {
     @Inject
     @DatabaseManager
     private DataManager manager;
+    @Inject
+    private MBeansController mBeansController;
 
     public void takeShot(SessionBean bean) {
         Shot newShot = ShotsParserFromBean.parseShot(bean.getX(), bean.getY(), bean.getR());
+        mBeansController.handleShot(newShot);
         manager.add(newShot);
         int curr = bean.getCurrentShotsOnPage();
         if (curr == 10) {
@@ -27,7 +32,6 @@ public class Controller {
         }
         curr += 1;
         bean.setCurrentShotsOnPage(curr);
-        System.out.println();
     }
 
     public List<Shot> getShotsList(SessionBean bean) {

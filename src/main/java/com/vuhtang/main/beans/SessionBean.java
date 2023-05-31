@@ -1,6 +1,7 @@
-package com.vuhtang.main;
+package com.vuhtang.main.beans;
 
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
@@ -9,6 +10,9 @@ import java.text.SimpleDateFormat;
 @Named("sessionBean")
 @SessionScoped
 public class SessionBean implements Serializable {
+
+    @Inject
+    private ShotsCounter counter;
 
     private Double x = 0d;
     private Double y = 0d;

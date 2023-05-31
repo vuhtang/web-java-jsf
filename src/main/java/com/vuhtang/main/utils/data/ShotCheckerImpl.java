@@ -1,4 +1,4 @@
-package com.vuhtang.main.utils;
+package com.vuhtang.main.utils.data;
 
 import com.vuhtang.main.Shot;
 

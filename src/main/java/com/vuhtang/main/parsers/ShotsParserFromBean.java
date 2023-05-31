@@ -1,8 +1,8 @@
 package com.vuhtang.main.parsers;
 
 import com.vuhtang.main.Shot;
-import com.vuhtang.main.utils.ShotChecker;
-import com.vuhtang.main.utils.ShotCheckerImpl;
+import com.vuhtang.main.utils.data.ShotChecker;
+import com.vuhtang.main.utils.data.ShotCheckerImpl;
 
 public class ShotsParserFromBean {
     private static final ShotChecker checker = new ShotCheckerImpl();

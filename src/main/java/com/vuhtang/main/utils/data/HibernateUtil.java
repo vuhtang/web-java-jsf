@@ -1,4 +1,4 @@
-package com.vuhtang.main.utils;
+package com.vuhtang.main.utils.data;
 
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;

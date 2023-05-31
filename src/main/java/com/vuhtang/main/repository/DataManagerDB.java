@@ -2,10 +2,10 @@ package com.vuhtang.main.repository;
 
 import com.google.gson.Gson;
 import com.vuhtang.main.Shot;
-import com.vuhtang.main.utils.HibernateUtil;
-import com.vuhtang.main.utils.ShotChecker;
-import com.vuhtang.main.utils.ShotCheckerImpl;
-import com.vuhtang.main.utils.Shots;
+import com.vuhtang.main.utils.data.HibernateUtil;
+import com.vuhtang.main.utils.data.ShotChecker;
+import com.vuhtang.main.utils.data.ShotCheckerImpl;
+import com.vuhtang.main.utils.data.Shots;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;

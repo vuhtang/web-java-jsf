@@ -2,7 +2,7 @@ package main.repository;
 
 import com.vuhtang.main.Shot;
 import com.vuhtang.main.repository.DataManagerDB;
-import com.vuhtang.main.utils.HibernateUtil;
+import com.vuhtang.main.utils.data.HibernateUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;

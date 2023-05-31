@@ -2,7 +2,7 @@ package com.vuhtang.main.repository;
 
 import com.google.gson.Gson;
 import com.vuhtang.main.Shot;
-import com.vuhtang.main.utils.Shots;
+import com.vuhtang.main.utils.data.Shots;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
 
